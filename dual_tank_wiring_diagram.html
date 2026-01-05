@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dual Tank 555 Timer Fuel Sender - Complete Wiring Diagram</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #34495e;
+            margin-top: 30px;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+        }
+        .diagram {
+            background-color: white;
+            border: 2px solid #333;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        svg {
+            width: 100%;
+            height: auto;
+        }
+        .note {
+            background-color: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .critical {
+            background-color: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .highlight {
+            background-color: #ffffcc;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dual Tank 555 Timer Fuel Level Sender</h1>
+        <h2>Complete Wiring Diagram - Single Arduino, Two Tanks</h2>
+
+        <div class="critical">
+            <strong>⚠️ CRITICAL SETUP REQUIREMENT:</strong><br>
+            One MCP4725 DAC MUST have its A0 address pin bridged to set address to 0x63.<br>
+            Without this, both DACs will be at 0x62 and the system will NOT work!
+        </div>
+
+        <h2>System Block Diagram</h2>
+        <div class="diagram">
+            <svg viewBox="0 0 1400 900" xmlns="http://www.w3.org/2000/svg">
+                <!-- Power Supply Section -->
+                <rect x="20" y="50" width="140" height="80" fill="#ffebcc" stroke="#333" stroke-width="2"/>
+                <text x="90" y="85" text-anchor="middle" font-size="14" font-weight="bold">Aircraft</text>
+                <text x="90" y="105" text-anchor="middle" font-size="12">+12V Power</text>
+                
+                <line x1="160" y1="90" x2="220" y2="90" stroke="#ff0000" stroke-width="3"/>
+                
+                <rect x="220" y="50" width="140" height="80" fill="#cce5ff" stroke="#333" stroke-width="2"/>
+                <text x="290" y="85" text-anchor="middle" font-size="14" font-weight="bold">LM7805</text>
+                <text x="290" y="105" text-anchor="middle" font-size="12">+5V Reg</text>
+                
+                <line x1="360" y1="90" x2="450" y2="90" stroke="#00cc00" stroke-width="3"/>
+                <text x="405" y="85" text-anchor="middle" font-size="10" fill="#00cc00">+5V</text>
+                
+                <!-- Arduino Nano - Center -->
+                <rect x="550" y="200" width="200" height="320" fill="#d4edda" stroke="#333" stroke-width="4"/>
+                <text x="650" y="230" text-anchor="middle" font-size="20" font-weight="bold">Arduino Nano</text>
+                <text x="650" y="250" text-anchor="middle" font-size="12">ATmega328P</text>
+                
+                <!-- Arduino power -->
+                <line x1="450" y1="90" x2="450" y2="280" stroke="#00cc00" stroke-width="2"/>
+                <line x1="450" y1="280" x2="550" y2="280" stroke="#00cc00" stroke-width="2"/>
+                <text x="560" y="285" font-size="11">Vin</text>
+                
+                <!-- Arduino pins -->
+                <text x="560" y="310" font-size="11" font-weight="bold">Pin 2</text>
+                <text x="595" y="310" font-size="9">(Left Freq)</text>
+                <circle cx="545" cy="307" r="4" fill="#9c27b0"/>
+                
+                <text x="560" y="335" font-size="11" font-weight="bold">Pin 3</text>
+                <text x="595" y="335" font-size="9">(Right Freq)</text>
+                <circle cx="545" cy="332" r="4" fill="#e91e63"/>
+                
+                <text x="560" y="365" font-size="11">Pin 4</text>
+                <text x="595" y="365" font-size="9">(Empty Btn)</text>
+                
+                <text x="560" y="385" font-size="11">Pin 5</text>
+                <text x="595" y="385" font-size="9">(Full Btn)</text>
+                
+                <text x="560" y="405" font-size="11">Pin 6</text>
+                <text x="595" y="405" font-size="9">(Tank Sel)</text>
+                
+                <text x="560" y="430" font-size="11">Pin 13</text>
+                <text x="595" y="430" font-size="9">(LED)</text>
+                <line x1="750" y1="427" x2="800" y2="427" stroke="#333" stroke-width="2"/>
+                <circle cx="810" cy="427" r="8" fill="#ff0000" stroke="#333" stroke-width="2"/>
+                
+                <text x="560" y="460" font-size="11">A4 (SDA)</text>
+                <circle cx="740" cy="457" r="4" fill="#0066cc"/>
+                
+                <text x="560" y="480" font-size="11">A5 (SCL)</text>
+                <circle cx="740" cy="477" r="4" fill="#00cc00"/>
+                
+                <!-- Left Tank Section -->
+                <rect x="50" y="280" width="180" height="120" fill="#e8f5e9" stroke="#333" stroke-width="3"/>
+                <text x="140" y="310" text-anchor="middle" font-size="16" font-weight="bold">LEFT TANK</text>
+                <text x="140" y="330" text-anchor="middle" font-size="12">Fuel Probe</text>
+                <text x="140" y="350" text-anchor="middle" font-size="10">Capacitive</text>
+                <text x="140" y="368" text-anchor="middle" font-size="10">150-600 pF</text>
+                <text x="140" y="390" text-anchor="middle" font-size="9" font-style="italic">(varies with fuel)</text>
+                
+                <!-- Left 555 Timer -->
+                <rect x="280" y="280" width="160" height="120" fill="#fff9cc" stroke="#333" stroke-width="3"/>
+                <text x="360" y="310" text-anchor="middle" font-size="14" font-weight="bold">555 Timer #1</text>
+                <text x="360" y="328" text-anchor="middle" font-size="10">LEFT TANK</text>
+                <text x="360" y="350" text-anchor="middle" font-size="9">R1: 10kΩ</text>
+                <text x="360" y="365" text-anchor="middle" font-size="9">R2: 100kΩ</text>
+                <text x="360" y="385" text-anchor="middle" font-size="10" font-weight="bold">Output:</text>
+                <text x="360" y="398" text-anchor="middle" font-size="9">15-70 kHz</text>
+                
+                <line x1="230" y1="340" x2="280" y2="340" stroke="#cc6600" stroke-width="3" stroke-dasharray="5,5"/>
+                <line x1="440" y1="307" x2="545" y2="307" stroke="#9c27b0" stroke-width="3"/>
+                
+                <!-- Right Tank Section -->
+                <rect x="50" y="550" width="180" height="120" fill="#e8f5e9" stroke="#333" stroke-width="3"/>
+                <text x="140" y="580" text-anchor="middle" font-size="16" font-weight="bold">RIGHT TANK</text>
+                <text x="140" y="600" text-anchor="middle" font-size="12">Fuel Probe</text>
+                <text x="140" y="620" text-anchor="middle" font-size="10">Capacitive</text>
+                <text x="140" y="638" text-anchor="middle" font-size="10">150-600 pF</text>
+                <text x="140" y="660" text-anchor="middle" font-size="9" font-style="italic">(varies with fuel)</text>
+                
+                <!-- Right 555 Timer -->
+                <rect x="280" y="550" width="160" height="120" fill="#fff9cc" stroke="#333" stroke-width="3"/>
+                <text x="360" y="580" text-anchor="middle" font-size="14" font-weight="bold">555 Timer #2</text>
+                <text x="360" y="598" text-anchor="middle" font-size="10">RIGHT TANK</text>
+                <text x="360" y="620" text-anchor="middle" font-size="9">R3: 10kΩ</text>
+                <text x="360" y="635" text-anchor="middle" font-size="9">R4: 100kΩ</text>
+                <text x="360" y="655" text-anchor="middle" font-size="10" font-weight="bold">Output:</text>
+                <text x="360" y="668" text-anchor="middle" font-size="9">15-70 kHz</text>
+                
+                <line x1="230" y1="610" x2="280" y2="610" stroke="#cc6600" stroke-width="3" stroke-dasharray="5,5"/>
+                <line x1="440" y1="610" x2="490" y2="610" stroke="#e91e63" stroke-width="3"/>
+                <line x1="490" y1="610" x2="490" y2="332" stroke="#e91e63" stroke-width="3"/>
+                <line x1="490" y1="332" x2="545" y2="332" stroke="#e91e63" stroke-width="3"/>
+                
+                <!-- I2C Bus -->
+                <line x1="740" y1="457" x2="900" y2="457" stroke="#0066cc" stroke-width="3"/>
+                <line x1="740" y1="477" x2="900" y2="477" stroke="#00cc00" stroke-width="3"/>
+                <line x1="900" y1="457" x2="900" y2="680" stroke="#0066cc" stroke-width="3"/>
+                <line x1="900" y1="477" x2="920" y2="477" stroke="#00cc00" stroke-width="3"/>
+                <line x1="920" y1="477" x2="920" y2="680" stroke="#00cc00" stroke-width="3"/>
+                
+                <!-- Left DAC -->
+                <rect x="850" y="280" width="180" height="120" fill="#f3e5f5" stroke="#333" stroke-width="3"/>
+                <text x="940" y="310" text-anchor="middle" font-size="14" font-weight="bold">MCP4725</text>
+                <text x="940" y="328" text-anchor="middle" font-size="12" font-weight="bold">LEFT TANK</text>
+                <text x="940" y="348" text-anchor="middle" font-size="11" fill="#0066cc">I2C: 0x62</text>
+                <text x="940" y="365" text-anchor="middle" font-size="9">(Default address)</text>
+                <text x="940" y="385" text-anchor="middle" font-size="10" font-weight="bold">12-bit DAC</text>
+                
+                <line x1="900" y1="350" x2="850" y2="350" stroke="#0066cc" stroke-width="2"/>
+                <line x1="920" y1="355" x2="850" y2="355" stroke="#00cc00" stroke-width="2"/>
+                
+                <!-- Right DAC -->
+                <rect x="850" y="550" width="180" height="120" fill="#fce4ec" stroke="#333" stroke-width="3"/>
+                <text x="940" y="580" text-anchor="middle" font-size="14" font-weight="bold">MCP4725</text>
+                <text x="940" y="598" text-anchor="middle" font-size="12" font-weight="bold">RIGHT TANK</text>
+                <text x="940" y="618" text-anchor="middle" font-size="11" fill="#cc0000">I2C: 0x63</text>
+                <text x="940" y="635" text-anchor="middle" font-size="9" fill="#cc0000">(A0 BRIDGED!)</text>
+                <text x="940" y="655" text-anchor="middle" font-size="10" font-weight="bold">12-bit DAC</text>
+                
+                <line x1="900" y1="620" x2="850" y2="620" stroke="#0066cc" stroke-width="2"/>
+                <line x1="920" y1="625" x2="850" y2="625" stroke="#00cc00" stroke-width="2"/>
+                
+                <!-- Outputs to Dynon -->
+                <rect x="1100" y="280" width="180" height="80" fill="#ffe0b2" stroke="#333" stroke-width="2"/>
+                <text x="1190" y="310" text-anchor="middle" font-size="14" font-weight="bold">Dynon D120</text>
+                <text x="1190" y="330" text-anchor="middle" font-size="12">Left Fuel Input</text>
+                <text x="1190" y="348" text-anchor="middle" font-size="10">0-5V</text>
+                <line x1="1030" y1="340" x2="1100" y2="320" stroke="#ff6600" stroke-width="3"/>
+                
+                <rect x="1100" y="550" width="180" height="80" fill="#ffe0b2" stroke="#333" stroke-width="2"/>
+                <text x="1190" y="580" text-anchor="middle" font-size="14" font-weight="bold">Dynon D120</text>
+                <text x="1190" y="600" text-anchor="middle" font-size="12">Right Fuel Input</text>
+                <text x="1190" y="618" text-anchor="middle" font-size="10">0-5V</text>
+                <line x1="1030" y1="610" x2="1100" y2="590" stroke="#ff6600" stroke-width="3"/>
+                
+                <!-- Calibration Buttons -->
+                <rect x="550" y="600" width="90" height="50" fill="#e3f2fd" stroke="#333" stroke-width="2"/>
+                <text x="595" y="630" text-anchor="middle" font-size="12" font-weight="bold">EMPTY</text>
+                <line x1="595" y1="600" x2="595" y2="570" stroke="#333" stroke-width="2"/>
+                <line x1="595" y1="570" x2="560" y2="365" stroke="#333" stroke-width="2"/>
+                
+                <rect x="660" y="600" width="90" height="50" fill="#e3f2fd" stroke="#333" stroke-width="2"/>
+                <text x="705" y="630" text-anchor="middle" font-size="12" font-weight="bold">FULL</text>
+                <line x1="705" y1="600" x2="705" y2="575" stroke="#333" stroke-width="2"/>
+                <line x1="705" y1="575" x2="560" y2="385" stroke="#333" stroke-width="2"/>
+                
+                <rect x="550" y="680" width="200" height="50" fill="#fff3cd" stroke="#333" stroke-width="2"/>
+                <text x="650" y="710" text-anchor="middle" font-size="12" font-weight="bold">TANK SELECT</text>
+                <line x1="650" y1="680" x2="650" y2="660" stroke="#333" stroke-width="2"/>
+                <line x1="650" y1="660" x2="560" y2="405" stroke="#333" stroke-width="2"/>
+                
+                <!-- Ground symbols -->
+                <line x1="360" y1="400" x2="360" y2="420" stroke="#333" stroke-width="2"/>
+                <line x1="350" y1="420" x2="370" y2="420" stroke="#333" stroke-width="3"/>
+                <line x1="355" y1="425" x2="365" y2="425" stroke="#333" stroke-width="2"/>
+                <text x="380" y="425" font-size="10">GND</text>
+                
+                <!-- Legend -->
+                <rect x="20" y="750" width="350" height="130" fill="#f9f9f9" stroke="#333" stroke-width="1"/>
+                <text x="195" y="775" text-anchor="middle" font-size="14" font-weight="bold">Signal Legend</text>
+                <line x1="40" y1="790" x2="90" y2="790" stroke="#ff0000" stroke-width="3"/>
+                <text x="100" y="795" font-size="11">12V Aircraft Power</text>
+                <line x1="40" y1="810" x2="90" y2="810" stroke="#00cc00" stroke-width="3"/>
+                <text x="100" y="815" font-size="11">+5V Regulated</text>
+                <line x1="40" y1="830" x2="90" y2="830" stroke="#9c27b0" stroke-width="3"/>
+                <text x="100" y="835" font-size="11">Left Tank Frequency</text>
+                <line x1="40" y1="850" x2="90" y2="850" stroke="#e91e63" stroke-width="3"/>
+                <text x="100" y="855" font-size="11">Right Tank Frequency</text>
+                <line x1="40" y1="870" x2="90" y2="870" stroke="#ff6600" stroke-width="3"/>
+                <text x="100" y="875" font-size="11">0-5V Analog Output</text>
+            </svg>
+        </div>
+
+        <h2>Detailed 555 Timer Circuits</h2>
+        
+        <div class="note">
+            <strong>Note:</strong> Both 555 circuits are identical except they connect to different Arduino pins and different fuel probes.
+        </div>
+
+        <div class="diagram">
+            <svg viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+                <!-- LEFT 555 Circuit -->
+                <text x="300" y="30" text-anchor="middle" font-size="18" font-weight="bold">LEFT TANK - 555 Timer #1</text>
+                
+                <rect x="200" y="100" width="100" height="200" fill="#ffffcc" stroke="#333" stroke-width="2"/>
+                <text x="250" y="85" text-anchor="middle" font-size="12" font-weight="bold">NE555</text>
+                
+                <!-- Pin labels left 555 -->
+                <text x="190" y="130" text-anchor="end" font-size="9">1 GND</text>
+                <text x="190" y="150" text-anchor="end" font-size="9">2 Trig</text>
+                <text x="190" y="170" text-anchor="end" font-size="9">3 Out</text>
+                <text x="190" y="190" text-anchor="end" font-size="9">4 Rst</text>
+                
+                <text x="310" y="130" font-size="9">8 Vcc</text>
+                <text x="310" y="150" font-size="9">7 Disch</text>
+                <text x="310" y="170" font-size="9">6 Thr</text>
+                <text x="310" y="190" font-size="9">5 CV</text>
+                
+                <!-- Power connections -->
+                <line x1="300" y1="127" x2="370" y2="127" stroke="#ff0000" stroke-width="2"/>
+                <line x1="370" y1="127" x2="370" y2="50" stroke="#ff0000" stroke-width="2"/>
+                <text x="380" y="55" font-size="11" font-weight="bold" fill="#ff0000">+5V</text>
+                
+                <line x1="200" y1="187" x2="150" y2="187" stroke="#ff0000" stroke-width="2"/>
+                <line x1="150" y1="187" x2="150" y2="50" stroke="#ff0000" stroke-width="2"/>
+                <line x1="150" y1="50" x2="370" y2="50" stroke="#ff0000" stroke-width="2"/>
+                
+                <!-- Timing network -->
+                <rect x="360" y="90" width="20" height="40" fill="none" stroke="#333" stroke-width="2"/>
+                <text x="385" y="113" font-size="9">R1</text>
+                <text x="385" y="123" font-size="8">10kΩ</text>
+                <line x1="370" y1="50" x2="370" y2="90" stroke="#333" stroke-width="2"/>
+                <line x1="370" y1="130" x2="370" y2="147" stroke="#333" stroke-width="2"/>
+                
+                <circle cx="370" cy="147" r="4" fill="#333"/>
+                
+                <rect x="360" y="180" width="20" height="40" fill="none" stroke="#333" stroke-width="2"/>
+                <text x="385" y="203" font-size="9">R2</text>
+                <text x="385" y="213" font-size="8">100kΩ</text>
+                <line x1="370" y1="147" x2="370" y2="180" stroke="#333" stroke-width="2"/>
+                <line x1="370" y1="220" x2="370" y2="260" stroke="#333" stroke-width="2"/>
+                
+                <!-- Fuel probe -->
+                <line x1="370" y1="260" x2="420" y2="260" stroke="#333" stroke-width="2"/>
+                <line x1="415" y1="253" x2="425" y2="253" stroke="#333" stroke-width="2"/>
+                <line x1="415" y1="267" x2="425" y2="267" stroke="#333" stroke-width="2"/>
+                <line x1="420" y1="267" x2="420" y2="320" stroke="#333" stroke-width="2"/>
+                <text x="440" y="268" font-size="10" font-weight="bold">Left Probe</text>
+                <text x="440" y="280" font-size="8">150-600 pF</text>
+                
+                <!-- Connections to junction -->
+                <line x1="200" y1="147" x2="370" y2="147" stroke="#333" stroke-width="2"/>
+                <line x1="300" y1="147" x2="370" y2="147" stroke="#333" stroke-width="2"/>
+                <line x1="300" y1="167" x2="370" y2="167" stroke="#333" stroke-width="2"/>
+                <line x1="370" y1="167" x2="370" y2="147" stroke="#333" stroke-width="2"/>
+                
+                <!-- Ground -->
+                <line x1="200" y1="127" x2="150" y2="127" stroke="#333" stroke-width="2"/>
+                <line x1="150" y1="127" x2="150" y2="320" stroke="#333" stroke-width="2"/>
+                <line x1="150" y1="320" x2="420" y2="320" stroke="#333" stroke-width="3"/>
+                <line x1="140" y1="320" x2="160" y2="320" stroke="#333" stroke-width="3"/>
+                <line x1="145" y1="325" x2="155" y2="325" stroke="#333" stroke-width="2"/>
+                
+                <!-- Pin 5 bypass -->
+                <line x1="300" y1="187" x2="330" y2="187" stroke="#333" stroke-width="2"/>
+                <line x1="330" y1="187" x2="330" y2="220" stroke="#333" stroke-width="2"/>
+                <line x1="325" y1="220" x2="335" y2="220" stroke="#333" stroke-width="2"/>
+                <line x1="325" y1="225" x2="335" y2="225" stroke="#333" stroke-width="2"/>
+                <line x1="330" y1="225" x2="330" y2="255" stroke="#333" stroke-width="2"/>
+                <text x="340" y="245" font-size="8">0.01µF</text>
+                <line x1="330" y1="255" x2="330" y2="320" stroke="#333" stroke-width="2"/>
+                
+                <!-- Output -->
+                <line x1="200" y1="167" x2="100" y2="167" stroke="#9c27b0" stroke-width="3"/>
+                <text x="50" y="162" text-anchor="end" font-size="11" font-weight="bold" fill="#9c27b0">To Arduino</text>
+                <text x="50" y="177" text-anchor="end" font-size="10" fill="#9c27b0">Pin 2</text>
+                
+                <!-- RIGHT 555 Circuit -->
+                <text x="900" y="30" text-anchor="middle" font-size="18" font-weight="bold">RIGHT TANK - 555 Timer #2</text>
+                
+                <rect x="800" y="100" width="100" height="200" fill="#ffffcc" stroke="#333" stroke-width="2"/>
+                <text x="850" y="85" text-anchor="middle" font-size="12" font-weight="bold">NE555</text>
+                
+                <!-- Pin labels right 555 -->
+                <text x="790" y="130" text-anchor="end" font-size="9">1 GND</text>
+                <text x="790" y="150" text-anchor="end" font-size="9">2 Trig</text>
+                <text x="790" y="170" text-anchor="end" font-size="9">3 Out</text>
+                <text x="790" y="190" text-anchor="end" font-size="9">4 Rst</text>
+                
+                <text x="910" y="130" font-size="9">8 Vcc</text>
+                <text x="910" y="150" font-size="9">7 Disch</text>
+                <text x="910" y="170" font-size="9">6 Thr</text>
+                <text x="910" y="190" font-size="9">5 CV</text>
+                
+                <!-- Power connections -->
+                <line x1="900" y1="127" x2="970" y2="127" stroke="#ff0000" stroke-width="2"/>
+                <line x1="970" y1="127" x2="970" y2="50" stroke="#ff0000" stroke-width="2"/>
+                <text x="980" y="55" font-size="11" font-weight="bold" fill="#ff0000">+5V</text>
+                
+                <line x1="800" y1="187" x2="750" y2="187" stroke="#ff0000" stroke-width="2"/>
+                <line x1="750" y1="187" x2="750" y2="50" stroke="#ff0000" stroke-width="2"/>
+                <line x1="750" y1="50" x2="970" y2="50" stroke="#ff0000" stroke-width="2"/>
+                
+                <!-- Timing network -->
+                <rect x="960" y="90" width="20" height="40" fill="none" stroke="#333" stroke-width="2"/>
+                <text x="985" y="113" font-size="9">R3</text>
+                <text x="985" y="123" font-size="8">10kΩ</text>
+                <line x1="970" y1="50" x2="970" y2="90" stroke="#333" stroke-width="2"/>
+                <line x1="970" y1="130" x2="970" y2="147" stroke="#333" stroke-width="2"/>
+                
+                <circle cx="970" cy="147" r="4" fill="#333"/>
+                
+                <rect x="960" y="180" width="20" height="40" fill="none" stroke="#333" stroke-width="2"/>
+                <text x="985" y="203" font-size="9">R4</text>
+                <text x="985" y="213" font-size="8">100kΩ</text>
+                <line x1="970" y1="147" x2="970" y2="180" stroke="#333" stroke-width="2"/>
+                <line x1="970" y1="220" x2="970" y2="260" stroke="#333" stroke-width="2"/>
+                
+                <!-- Fuel probe -->
+                <line x1="970" y1="260" x2="1020" y2="260" stroke="#333" stroke-width="2"/>
+                <line x1="1015" y1="253" x2="1025" y2="253" stroke="#333" stroke-width="2"/>
+                <line x1="1015" y1="267" x2="1025" y2="267" stroke="#333" stroke-width="2"/>
+                <line x1="1020" y1="267" x2="1020" y2="320" stroke="#333" stroke-width="2"/>
+                <text x="1040" y="268" font-size="10" font-weight="bold">Right Probe</text>
+                <text x="1040" y="280" font-size="8">150-600 pF</text>
+                
+                <!-- Connections to junction -->
+                <line x1="800" y1="147" x2="970" y2="147" stroke="#333" stroke-width="2"/>
+                <line x1="900" y1="147" x2="970" y2="147" stroke="#333" stroke-width="2"/>
+                <line x1="900" y1="167" x2="970" y2="167" stroke="#333" stroke-width="2"/>
+                <line x1="970" y1="167" x2="970" y2="147" stroke="#333" stroke-width="2"/>
+                
+                <!-- Ground -->
+                <line x1="800" y1="127" x2="750" y2="127" stroke="#333" stroke-width="2"/>
+                <line x1="750" y1="127" x2="750" y2="320" stroke="#333" stroke-width="2"/>
+                <line x1="750" y1="320" x2="1020" y2="320" stroke="#333" stroke-width="3"/>
+                <line x1="740" y1="320" x2="760" y2="320" stroke="#333" stroke-width="3"/>
+                <line x1="745" y1="325" x2="755" y2="325" stroke="#333" stroke-width="2"/>
+                
+                <!-- Pin 5 bypass -->
+                <line x1="900" y1="187" x2="930" y2="187" stroke="#333" stroke-width="2"/>
+                <line x1="930" y1="187" x2="930" y2="220" stroke="#333" stroke-width="2"/>
+                <line x1="925" y1="220" x2="935" y2="220" stroke="#333" stroke-width="2"/>
+                <line x1="925" y1="225" x2="935" y2="225" stroke="#333" stroke-width="2"/>
+                <line x1="930" y1="225" x2="930" y2="255" stroke="#333" stroke-width="2"/>
+                <text x="940" y="245" font-size="8">0.01µF</text>
+                <line x1="930" y1="255" x2="930" y2="320" stroke="#333" stroke-width="2"/>
+                
+                <!-- Output -->
+                <line x1="800" y1="167" x2="700" y2="167" stroke="#e91e63" stroke-width="3"/>
+                <text x="650" y="162" text-anchor="end" font-size="11" font-weight="bold" fill="#e91e63">To Arduino</text>
+                <text x="650" y="177" text-anchor="end" font-size="10" fill="#e91e63">Pin 3</text>
+                
+                <!-- Note -->
+                <rect x="20" y="400" width="1160" height="180" fill="#f0f8ff" stroke="#2196F3" stroke-width="2"/>
+                <text x="600" y="430" text-anchor="middle" font-size="16" font-weight="bold">Critical Points</text>
+                <text x="40" y="460" font-size="12">1. Both 555 circuits are IDENTICAL except for component labels (R1/R2 vs R3/R4)</text>
+                <text x="40" y="480" font-size="12">2. Each 555 has its own timing network (10kΩ + 100kΩ resistors)</text>
+                <text x="40" y="500" font-size="12">3. Left 555 output → Arduino Pin 2 (purple wire)</text>
+                <text x="40" y="520" font-size="12">4. Right 555 output → Arduino Pin 3 (pink wire)</text>
+                <text x="40" y="540" font-size="12">5. Both share common +5V and Ground</text>
+                <text x="40" y="560" font-size="12">6. Keep fuel probe wires SHORT (&lt;3 feet) and use SHIELDED cable (shield grounded at converter end only)</text>
+            </svg>
+        </div>
+
+        <h2>Power Supply Detail</h2>
+        <div class="diagram">
+            <svg viewBox="0 0 800 350" xmlns="http://www.w3.org/2000/svg">
+                <!-- Input -->
+                <text x="50" y="100" font-size="14" font-weight="bold">Aircraft +12V</text>
+                <line x1="150" y1="95" x2="200" y2="95" stroke="#ff0000" stroke-width="3"/>
+                
+                <!-- Fuse -->
+                <rect x="200" y="85" width="40" height="20" fill="none" stroke="#333" stroke-width="2"/>
+                <text x="220" y="100" text-anchor="middle" font-size="10">1A</text>
+                <text x="220" y="75" text-anchor="middle" font-size="10">Fuse</text>
+                
+                <!-- Diode -->
+                <polygon points="280,85 280,105 300,95" fill="#333"/>
+                <line x1="300" y1="85" x2="300" y2="105" stroke="#333" stroke-width="2"/>
+                <line x1="240" y1="95" x2="280" y2="95" stroke="#ff0000" stroke-width="3"/>
+                <text x="290" y="75" text-anchor="middle" font-size="10">D1</text>
+                <text x="290" y="125" text-anchor="middle" font-size="9">1N4001</text>
+                
+                <!-- Caps -->
+                <line x1="330" y1="95" x2="330" y2="120" stroke="#333" stroke-width="2"/>
+                <line x1="325" y1="120" x2="335" y2="120" stroke="#333" stroke-width="2"/>
+                <line x1="325" y1="125" x2="335" y2="125" stroke="#333" stroke-width="2"/>
+                <line x1="330" y1="125" x2="330" y2="150" stroke="#333" stroke-width="2"/>
+                <text x="345" y="125" font-size="10">10µF</text>
+                <line x1="300" y1="95" x2="380" y2="95" stroke="#ff0000" stroke-width="3"/>
+                
+                <!-- LM7805 -->
+                <rect x="420" y="70" width="80" height="50" fill="#cce5ff" stroke="#333" stroke-width="2"/>
+                <text x="460" y="90" text-anchor="middle" font-size="12" font-weight="bold">LM7805</text>
+                <text x="460" y="105" text-anchor="middle" font-size="9">5V Reg</text>
+                <line x1="380" y1="95" x2="420" y2="95" stroke="#ff0000" stroke-width="3"/>
+                
+                <!-- Output cap -->
+                <line x1="550" y1="95" x2="550" y2="120" stroke="#333" stroke-width="2"/>
+                <line x1="545" y1="120" x2="555" y2="120" stroke="#333" stroke-width="2"/>
+                <line x1="545" y1="125" x2="555" y2="125" stroke="#333" stroke-width="2"/>
+                <line x1="550" y1="125" x2="550" y2="150" stroke="#333" stroke-width="2"/>
+                <text x="565" y="125" font-size="10">0.1µF</text>
+                <line x1="500" y1="95" x2="650" y2="95" stroke="#00cc00" stroke-width="3"/>
+                <text x="680" y="100" font-size="14" font-weight="bold" fill="#00cc00">+5V Output</text>
+                
+                <!-- Ground rail -->
+                <line x1="330" y1="150" x2="550" y2="150" stroke="#333" stroke-width="3"/>
+                <line x1="460" y1="120" x2="460" y2="150" stroke="#333" stroke-width="2"/>
+                
+                <!-- Ground symbol -->
+                <line x1="440" y1="180" x2="440" y2="150" stroke="#333" stroke-width="2"/>
+                <line x1="430" y1="180" x2="450" y2="180" stroke="#333" stroke-width="3"/>
+                <line x1="435" y1="185" x2="445" y2="185" stroke="#333" stroke-width="2"/>
+                
+                <!-- Power distribution -->
+                <text x="400" y="240" text-anchor="middle" font-size="14" font-weight="bold">+5V Distribution</text>
+                <line x1="650" y1="95" x2="650" y2="260" stroke="#00cc00" stroke-width="2"/>
+                <line x1="650" y1="260" x2="100" y2="260" stroke="#00cc00" stroke-width="3"/>
+                
+                <circle cx="250" cy="260" r="4" fill="#00cc00"/>
+                <text x="250" y="280" text-anchor="middle" font-size="10">Arduino</text>
+                
+                <circle cx="350" cy="260" r="4" fill="#00cc00"/>
+                <text x="350" y="280" text-anchor="middle" font-size="10">555 #1</text>
+                
+                <circle cx="450" cy="260" r="4" fill="#00cc00"/>
+                <text x="450" y="280" text-anchor="middle" font-size="10">555 #2</text>
+                
+                <circle cx="550" cy="260" r="4" fill="#00cc00"/>
+                <text x="550" y="280" text-anchor="middle" font-size="10">DAC Left</text>
+                
+                <circle cx="650" cy="260" r="4" fill="#00cc00"/>
+                <text x="650" y="280" text-anchor="middle" font-size="10">DAC Right</text>
+                
+                <!-- Notes -->
+                <text x="400" y="320" text-anchor="middle" font-size="11" font-style="italic">All components share common +5V and Ground</text>
+            </svg>
+        </div>
+
+        <h2>Complete Pin Connection Table</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>From</th>
+                    <th>Pin/Terminal</th>
+                    <th>To</th>
+                    <th>Wire Color Suggestion</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background-color: #ffebcc;">
+                    <td colspan="4" style="text-align: center; font-weight: bold;">POWER CONNECTIONS</td>
+                </tr>
+                <tr>
+                    <td>Aircraft Power</td>
+                    <td>+12V</td>
+                    <td>LM7805 Input</td>
+                    <td>Red (heavy gauge)</td>
+                </tr>
+                <tr>
+                    <td>LM7805</td>
+                    <td>Output</td>
+                    <td>Common +5V Rail</td>
+                    <td>Red</td>
+                </tr>
+                <tr>
+                    <td>Common +5V Rail</td>
+                    <td>-</td>
+                    <td>Arduino Vin, 555 #1 Pin 8, 555 #2 Pin 8, DAC L VDD, DAC R VDD</td>
+                    <td>Red</td>
+                </tr>
+                <tr>
+                    <td>All Components</td>
+                    <td>GND</td>
+                    <td>Common Ground</td>
+                    <td>Black (heavy gauge)</td>
+                </tr>
+                <tr style="background-color: #fff9cc;">
+                    <td colspan="4" style="text-align: center; font-weight: bold;">LEFT TANK - 555 TIMER #1</td>
+                </tr>
+                <tr>
+                    <td>555 #1</td>
+                    <td>Pin 3 (Output)</td>
+                    <td>Arduino Pin 2</td>
+                    <td>Purple</td>
+                </tr>
+                <tr>
+                    <td>555 #1</td>
+                    <td>Pin 2, 6, 7 (Junction)</td>
+                    <td>Left Fuel Probe Center</td>
+                    <td>Orange (shielded coax center)</td>
+                </tr>
+                <tr>
+                    <td>Left Fuel Probe</td>
+                    <td>Shield</td>
+                    <td>Ground (at converter only)</td>
+                    <td>Shield (not insulated wire)</td>
+                </tr>
+                <tr style="background-color: #fff9cc;">
+                    <td colspan="4" style="text-align: center; font-weight: bold;">RIGHT TANK - 555 TIMER #2</td>
+                </tr>
+                <tr>
+                    <td>555 #2</td>
+                    <td>Pin 3 (Output)</td>
+                    <td>Arduino Pin 3</td>
+                    <td>Pink</td>
+                </tr>
+                <tr>
+                    <td>555 #2</td>
+                    <td>Pin 2, 6, 7 (Junction)</td>
+                    <td>Right Fuel Probe Center</td>
+                    <td>Orange (shielded coax center)</td>
+                </tr>
+                <tr>
+                    <td>Right Fuel Probe</td>
+                    <td>Shield</td>
+                    <td>Ground (at converter only)</td>
+                    <td>Shield (not insulated wire)</td>
+                </tr>
+                <tr style="background-color: #e3f2fd;">
+                    <td colspan="4" style="text-align: center; font-weight: bold;">CALIBRATION BUTTONS</td>
+                </tr>
+                <tr>
+                    <td>EMPTY Button</td>
+                    <td>Terminal 1</td>
+                    <td>Arduino Pin 4</td>
+                    <td>Yellow</td>
+                </tr>
+                <tr>
+                    <td>EMPTY Button</td>
+                    <td>Terminal 2</td>
+                    <td>Ground</td>
+                    <td>Black</td>
+                </tr>
+                <tr>
+                    <td>FULL Button</td>
+                    <td>Terminal 1</td>
+                    <td>Arduino Pin 5</td>
+                    <td>Green</td>
+                </tr>
+                <tr>
+                    <td>FULL Button</td>
+                    <td>Terminal 2</td>
+                    <td>Ground</td>
+                    <td>Black</td>
+                </tr>
+                <tr>
+                    <td>TANK SELECT Button</td>
+                    <td>Terminal 1</td>
+                    <td>Arduino Pin 6</td>
+                    <td>Blue</td>
+                </tr>
+                <tr>
+                    <td>TANK SELECT Button</td>
+                    <td>Terminal 2</td>
+                    <td>Ground</td>
+                    <td>Black</td>
+                </tr>
+                <tr style="background-color: #f3e5f5;">
+                    <td colspan="4" style="text-align: center; font-weight: bold;">I2C BUS - SHARED</td>
+                </tr>
+                <tr>
+                    <td>Arduino</td>
+                    <td>A4 (SDA)</td>
+                    <td>DAC Left SDA + DAC Right SDA</td>
+                    <td>Blue (twisted pair)</td>
+                </tr>
+                <tr>
+                    <td>Arduino</td>
+                    <td>A5 (SCL)</td>
+                    <td>DAC Left SCL + DAC Right SCL</td>
+                    <td>White (twisted pair)</td>
+                </tr>
+                <tr style="background-color: #ffe0b2;">
+                    <td colspan="4" style="text-align: center; font-weight: bold;">OUTPUTS TO DYNON</td>
+                </tr>
+                <tr>
+                    <td>DAC Left (0x62)</td>
+                    <td>OUT</td>
+                    <td>Dynon D120 Left Fuel Input (+)</td>
+                    <td>Orange (shielded)</td>
+                </tr>
+                <tr>
+                    <td>DAC Right (0x63)</td>
+                    <td>OUT</td>
+                    <td>Dynon D120 Right Fuel Input (+)</td>
+                    <td>Orange (shielded)</td>
+                </tr>
+                <tr>
+                    <td>Common Ground</td>
+                    <td>-</td>
+                    <td>Dynon D120 Ground</td>
+                    <td>Black (heavy gauge)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="critical">
+            <strong>⚠️ CRITICAL: MCP4725 Address Configuration</strong><br>
+            The RIGHT tank MCP4725 MUST have its A0 solder pad bridged to change the I2C address from 0x62 to 0x63.<br>
+            Without this modification, both DACs will respond to the same address and the system will NOT work correctly!
+        </div>
+
+        <h2>Testing Checklist</h2>
+        <div style="background-color: #f9f9f9; padding: 15px; border: 1px solid #ddd;">
+            <h3>Power Supply Test</h3>
+            <input type="checkbox"> Aircraft 12V connected with 1A fuse<br>
+            <input type="checkbox"> LM7805 outputting stable +5V (measure with multimeter)<br>
+            <input type="checkbox"> All components receiving +5V<br>
+            <input type="checkbox"> Common ground verified<br>
+            
+            <h3>555 Timer Test</h3>
+            <input type="checkbox"> Left 555 Pin 3 shows square wave (scope or freq counter)<br>
+            <input type="checkbox"> Right 555 Pin 3 shows square wave<br>
+            <input type="checkbox"> Frequencies in range 15-70 kHz<br>
+            <input type="checkbox"> Frequency changes when fuel level changes<br>
+            
+            <h3>I2C Test</h3>
+            <input type="checkbox"> Upload I2C scanner sketch<br>
+            <input type="checkbox"> Device 0x62 detected (Left DAC)<br>
+            <input type="checkbox"> Device 0x63 detected (Right DAC)<br>
+            <input type="checkbox"> No other unexpected devices<br>
+            
+            <h3>Button Test</h3>
+            <input type="checkbox"> TANK SELECT toggles between left/right<br>
+            <input type="checkbox"> LED blinks 1x for LEFT, 2x for RIGHT<br>
+            <input type="checkbox"> EMPTY button triggers when held 2 seconds<br>
+            <input type="checkbox"> FULL button triggers when held 2 seconds<br>
+            
+            <h3>Calibration Test</h3>
+            <input type="checkbox"> Left tank calibrated (empty and full)<br>
+            <input type="checkbox"> Right tank calibrated (empty and full)<br>
+            <input type="checkbox"> Values saved in EEPROM<br>
+            <input type="checkbox"> Values persist after power cycle<br>
+            
+            <h3>Output Test</h3>
+            <input type="checkbox"> Left DAC outputs 0V when left tank empty<br>
+            <input type="checkbox"> Left DAC outputs 5V when left tank full<br>
+            <input type="checkbox"> Right DAC outputs 0V when right tank empty<br>
+            <input type="checkbox"> Right DAC outputs 5V when right tank full<br>
+            <input type="checkbox"> Both outputs stable (no oscillation)<br>
+            <input type="checkbox"> Outputs verified with multimeter<br>
+            
+            <h3>Integration Test</h3>
+            <input type="checkbox"> Dynon D120 shows correct left tank level<br>
+            <input type="checkbox"> Dynon D120 shows correct right tank level<br>
+            <input type="checkbox"> Verified against dipstick measurements<br>
+            <input type="checkbox"> System documented in aircraft logs<br>
+        </div>
+
+        <div class="warning">
+            <strong>Installation Tips:</strong>
+            <ul>
+                <li>Use <span class="highlight">RG-174 coax</span> or similar for fuel probe connections</li>
+                <li>Keep probe wires <span class="highlight">under 3 feet</span> in length</li>
+                <li>Ground shield at <span class="highlight">converter end ONLY</span></li>
+                <li>Route wiring away from ignition and high-current cables</li>
+                <li>Use <span class="highlight">strain reliefs</span> on all connections</li>
+                <li>Mount in <span class="highlight">aluminum enclosure</span> grounded to airframe</li>
+                <li>Label all wires clearly during installation</li>
+            </ul>
+        </div>
+
+        <h2>Common Issues and Solutions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Problem</th>
+                    <th>Likely Cause</th>
+                    <th>Solution</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>I2C scanner shows only 0x62</td>
+                    <td>Right DAC A0 not bridged</td>
+                    <td>Bridge A0 pad on right DAC breakout</td>
+                </tr>
+                <tr>
+                    <td>I2C scanner shows no devices</td>
+                    <td>SDA/SCL wiring wrong</td>
+                    <td>Verify A4→SDA, A5→SCL connections</td>
+                </tr>
+                <tr>
+                    <td>Left tank reading doesn't change</td>
+                    <td>555 #1 not oscillating</td>
+                    <td>Check power, probe connection, resistor values</td>
+                </tr>
+                <tr>
+                    <td>Right tank reading doesn't change</td>
+                    <td>555 #2 not oscillating</td>
+                    <td>Check power, probe connection, resistor values</td>
+                </tr>
+                <tr>
+                    <td>Both tanks show same reading</td>
+                    <td>Probes swapped or shorted</td>
+                    <td>Verify left probe→555 #1, right probe→555 #2</td>
+                </tr>
+                <tr>
+                    <td>Erratic readings</td>
+                    <td>Poor shielding or noise</td>
+                    <td>Check shield ground, increase filtering</td>
+                </tr>
+                <tr>
+                    <td>Tank selection not working</td>
+                    <td>Button not connected</td>
+                    <td>Verify Pin 6 connection and ground</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
